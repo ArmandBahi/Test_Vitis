@@ -130,6 +130,125 @@
 					"_postman_isSubFolder": true
 				},
 				{
+					"name": "User Start",
+					"item": [
+						{
+							"name": "Get private token (User)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "85a09737-c871-436d-a5dd-bdfe9ac56a9c",
+										"type": "text/javascript",
+										"exec": [
+											"// Test la présence de réponse",
+											"if(pm.response.responseSize === 0){",
+											"    tests['No response'] = false",
+											"    return null;",
+											"}",
+											"",
+											"// Tests contenu",
+											"var jsonData = pm.response.json();",
+											"tests[\"token is ok\"] = typeof(jsonData.token) === \"string\";",
+											"tests[\"user is ok\"] = typeof(jsonData.user) === \"string\";",
+											"tests[\"validity_date is ok\"] = typeof(jsonData.validity_date) === \"string\";",
+											"tests[\"user_id is ok\"] = typeof(jsonData.user_id) === \"number\";",
+											"tests[\"privileges is ok\"] = jsonData.privileges instanceof Array",
+											"",
+											"// Variables",
+											"pm.environment.set(\"main_user_token\", jsonData.token);",
+											"pm.environment.set(\"main_user_id\",jsonData.user_id);",
+											"",
+											"// Passe directement à la requête Get token",
+											"// postman.setNextRequest(\"Get token\");"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "6bd8e739-8151-4208-97aa-a70ed4f78467",
+										"type": "text/javascript",
+										"exec": [
+											"pm.environment.set(\"error_test\", false);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/xml, application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "user",
+											"type": "text",
+											"value": "{{user_user}}"
+										},
+										{
+											"key": "password",
+											"type": "text",
+											"value": "{{user_password}}"
+										},
+										{
+											"key": "duration",
+											"type": "text",
+											"value": "600"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://{{host}}/rest/vitis/privatetoken",
+									"protocol": "https",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"rest",
+										"vitis",
+										"privatetoken"
+									]
+								},
+								"description": "Request to get a token"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "a26d5104-9265-4758-973e-d03c7bc878cd",
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"id": "4979f18b-6990-40e6-be0a-43e4dace8015",
+								"type": "text/javascript"
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "Main",
 					"description": "",
 					"item": [
@@ -2522,12 +2641,6 @@
 												}
 											],
 											"_postman_isSubFolder": true
-										},
-										{
-											"name": "Without rights",
-											"description": "",
-											"item": [],
-											"_postman_isSubFolder": true
 										}
 									],
 									"_postman_isSubFolder": true
@@ -3257,7 +3370,7 @@
 												{
 													"listen": "test",
 													"script": {
-														"id": "ee2bf41d-c0ea-489b-bea3-638d3caa5c7f",
+														"id": "576b76cc-626f-48d7-9b44-3fd42bb5f936",
 														"type": "text/javascript",
 														"exec": [
 															"// Test la présence de réponse",
@@ -3273,6 +3386,741 @@
 															"tests[\"user_id is ok\"] = typeof(jsonData.users[0].user_id) === \"undefined\";",
 															"tests[\"login is ok\"] = typeof(jsonData.users[0].login) === \"undefined\";",
 															"tests[\"name is ok\"] = typeof(jsonData.users[0].name) === \"undefined\";",
+															""
+														]
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "d59d8802-00a7-4a9e-83ff-79b93b2a19d4",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"main_user_attributes\", \"\");"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users/:user_id?token={{main_token}}&attributs={{main_user_attributes}}",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users",
+														":user_id"
+													],
+													"query": [
+														{
+															"key": "token",
+															"value": "{{main_token}}",
+															"equals": true
+														},
+														{
+															"key": "attributs",
+															"value": "{{main_user_attributes}}",
+															"equals": true
+														}
+													],
+													"variable": [
+														{
+															"key": "user_id",
+															"value": "{{main_user_id}}"
+														}
+													]
+												},
+												"description": "Test: vérifie le précédent PUT"
+											},
+											"response": []
+										}
+									],
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "Without rights",
+									"description": "",
+									"item": [
+										{
+											"name": "Add User",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"",
+															"// Tests contenu",
+															"var jsonData = pm.response.json();",
+															"tests[\"user_id is ok\"] = typeof(jsonData.user_id) === \"number\";",
+															"",
+															"// Variables d'environnement",
+															"pm.environment.set(\"main_user_id\", jsonData.user_id);"
+														],
+														"id": "d3d438dd-6c3b-4b3b-8527-3bdf4d479b26",
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"pm.environment.set(\"main_user_login\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_name\", \"test main user\");",
+															"pm.environment.set(\"main_user_password\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_password_confirm\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_email\",\"test_main_user@test.com\");",
+															"pm.environment.set(\"main_user_company\",\"test company\");",
+															"pm.environment.set(\"main_user_department\",\"test departement\");",
+															"pm.environment.set(\"main_user_groups\", pm.environment.get(\"groups\"));",
+															"pm.environment.set(\"main_user_action\", \"\");",
+															"pm.environment.set(\"main_user_ip_constraint\", \"\");",
+															"pm.environment.set(\"main_user_restriction\", \"%\");",
+															"pm.environment.set(\"main_user_privileges\",\"vitis_user\");"
+														],
+														"id": "5867ae04-2e7c-4a99-b969-9dfdfb3fd2c0",
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/x-www-form-urlencoded"
+													}
+												],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "token",
+															"type": "text",
+															"value": "{{main_token}}"
+														},
+														{
+															"key": "login",
+															"type": "text",
+															"value": "{{main_user_login}}"
+														},
+														{
+															"key": "action",
+															"type": "text",
+															"value": "{{main_user_action}}"
+														},
+														{
+															"key": "name",
+															"type": "text",
+															"value": "{{main_user_name}}"
+														},
+														{
+															"key": "email",
+															"type": "text",
+															"value": "{{main_user_email}}"
+														},
+														{
+															"key": "company",
+															"type": "text",
+															"value": "{{main_user_company}}"
+														},
+														{
+															"key": "department",
+															"type": "text",
+															"value": "{{main_user_department}}"
+														},
+														{
+															"key": "groups",
+															"type": "text",
+															"value": "{{main_user_groups}}"
+														},
+														{
+															"key": "privileges",
+															"type": "text",
+															"value": "{{main_user_privileges}}"
+														},
+														{
+															"key": "ip_constraint",
+															"type": "text",
+															"value": "{{main_user_ip_constraint}}"
+														},
+														{
+															"key": "password",
+															"type": "text",
+															"value": "{{main_user_password}}"
+														},
+														{
+															"key": "password_confirm",
+															"type": "text",
+															"value": "{{main_user_password_confirm}}"
+														},
+														{
+															"key": "restriction",
+															"type": "text",
+															"value": "{{main_user_restriction}}"
+														}
+													]
+												},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users"
+													]
+												},
+												"description": "Test: Ajoute l'utilisateur Basic_user"
+											},
+											"response": []
+										},
+										{
+											"name": "Add User (without rights)",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "ffaad559-40c1-4b24-b978-6d2f37b5e488",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"pm.environment.set(\"error_test\", false);"
+														]
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "b3e1a2c8-d407-4ed5-b3dc-b85283a9c64a",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"error_test\", true);",
+															"pm.environment.set(\"main_user_login\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_name\", \"test main user\");",
+															"pm.environment.set(\"main_user_password\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_password_confirm\", \"test_main_user\");",
+															"pm.environment.set(\"main_user_email\",\"test_main_user@test.com\");",
+															"pm.environment.set(\"main_user_company\",\"test company\");",
+															"pm.environment.set(\"main_user_department\",\"test departement\");",
+															"pm.environment.set(\"main_user_groups\", pm.environment.get(\"groups\"));",
+															"pm.environment.set(\"main_user_action\", \"\");",
+															"pm.environment.set(\"main_user_ip_constraint\", \"\");",
+															"pm.environment.set(\"main_user_restriction\", \"%\");",
+															"pm.environment.set(\"main_user_privileges\",\"vitis_user\");"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/x-www-form-urlencoded"
+													}
+												],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "token",
+															"type": "text",
+															"value": "{{main_user_token}}"
+														},
+														{
+															"key": "login",
+															"type": "text",
+															"value": "{{main_user_login}}"
+														},
+														{
+															"key": "action",
+															"type": "text",
+															"value": "{{main_user_action}}"
+														},
+														{
+															"key": "name",
+															"type": "text",
+															"value": "{{main_user_name}}"
+														},
+														{
+															"key": "email",
+															"type": "text",
+															"value": "{{main_user_email}}"
+														},
+														{
+															"key": "company",
+															"type": "text",
+															"value": "{{main_user_company}}"
+														},
+														{
+															"key": "department",
+															"type": "text",
+															"value": "{{main_user_department}}"
+														},
+														{
+															"key": "groups",
+															"type": "text",
+															"value": "{{main_user_groups}}"
+														},
+														{
+															"key": "privileges",
+															"type": "text",
+															"value": "{{main_user_privileges}}"
+														},
+														{
+															"key": "ip_constraint",
+															"type": "text",
+															"value": "{{main_user_ip_constraint}}"
+														},
+														{
+															"key": "password",
+															"type": "text",
+															"value": "{{main_user_password}}"
+														},
+														{
+															"key": "password_confirm",
+															"type": "text",
+															"value": "{{main_user_password_confirm}}"
+														},
+														{
+															"key": "restriction",
+															"type": "text",
+															"value": "{{main_user_restriction}}"
+														}
+													]
+												},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users"
+													]
+												},
+												"description": "Test: Ajoute l'utilisateur Basic_user"
+											},
+											"response": []
+										},
+										{
+											"name": "Update User (without rights)",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "7311d720-0253-4ed5-a1f8-a38fc0b51ccb",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"error_test\", true);",
+															"pm.environment.set(\"main_user_name\", \"test main user edited\");",
+															"pm.environment.set(\"main_user_email\",\"test_main_user_edited@test.com\");",
+															"pm.environment.set(\"main_user_company\",\"test company edited\");",
+															"pm.environment.set(\"main_user_department\",\"test departement edited\");",
+															"// pm.environment.set(\"main_user_groups\", \"\");",
+															"// pm.environment.set(\"main_user_action\", \"\");",
+															"pm.environment.set(\"main_user_ip_constraint\", \"\");",
+															"pm.environment.set(\"main_user_restriction\", \"%\");",
+															"pm.environment.set(\"main_user_privileges\",\"vitis_user|vitis_admin\");",
+															"",
+															"",
+															""
+														]
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "184b2d9a-b42b-4eb6-9456-24431d1f9519",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"pm.environment.set(\"error_test\", false);"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users/:user_id?token={{main_user_token}}&name={{main_user_name}}&email={{main_user_email}}&company={{main_user_company}}&department={{main_user_department}}&groups={{main_user_groups}}&privileges={{main_user_privileges}}&ip_constraint={{main_user_ip_constraint}}&restriction={{main_user_restriction}}",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users",
+														":user_id"
+													],
+													"query": [
+														{
+															"key": "token",
+															"value": "{{main_user_token}}",
+															"equals": true
+														},
+														{
+															"equals": true,
+															"key": "login",
+															"value": "{{login}}",
+															"disabled": true
+														},
+														{
+															"key": "name",
+															"value": "{{main_user_name}}",
+															"equals": true
+														},
+														{
+															"key": "email",
+															"value": "{{main_user_email}}",
+															"equals": true
+														},
+														{
+															"key": "company",
+															"value": "{{main_user_company}}",
+															"equals": true
+														},
+														{
+															"key": "department",
+															"value": "{{main_user_department}}",
+															"equals": true
+														},
+														{
+															"key": "groups",
+															"value": "{{main_user_groups}}",
+															"equals": true
+														},
+														{
+															"key": "privileges",
+															"value": "{{main_user_privileges}}",
+															"equals": true
+														},
+														{
+															"key": "ip_constraint",
+															"value": "{{main_user_ip_constraint}}",
+															"equals": true
+														},
+														{
+															"equals": true,
+															"key": "password",
+															"value": "{{password}}",
+															"disabled": true
+														},
+														{
+															"equals": true,
+															"key": "password_confirm",
+															"value": "{{password_confirm}}",
+															"disabled": true
+														},
+														{
+															"key": "restriction",
+															"value": "{{main_user_restriction}}",
+															"equals": true
+														}
+													],
+													"variable": [
+														{
+															"key": "user_id",
+															"value": "{{main_user_id}}"
+														}
+													]
+												},
+												"description": "Request to update User"
+											},
+											"response": []
+										},
+										{
+											"name": "Delete User (without rights)",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "3f490ec1-7bff-462b-a95b-69eddb69e456",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"pm.environment.set(\"error_test\", false);"
+														]
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "5fd7d5e1-44b5-49c7-a9ae-bac03b2d8260",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"error_test\", true);"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users/:user_id?token={{main_user_token}}",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users",
+														":user_id"
+													],
+													"query": [
+														{
+															"key": "token",
+															"value": "{{main_user_token}}",
+															"equals": true
+														}
+													],
+													"variable": [
+														{
+															"key": "user_id",
+															"value": "{{main_user_id}}"
+														}
+													]
+												},
+												"description": "Request to delete User"
+											},
+											"response": []
+										},
+										{
+											"name": "Delete Users (without rights)",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "b161caa7-dc62-479d-ae9d-7350d550cf68",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"pm.environment.set(\"error_test\", false);"
+														]
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "c923cb12-612f-498b-be10-763aa7653c97",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"error_test\", true);"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users?token={{main_user_token}}&idList={{main_user_id_1}}|{{main_user_id_2}}",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users"
+													],
+													"query": [
+														{
+															"key": "token",
+															"value": "{{main_user_token}}",
+															"equals": true
+														},
+														{
+															"key": "idList",
+															"value": "{{main_user_id_1}}|{{main_user_id_2}}",
+															"equals": true
+														}
+													]
+												},
+												"description": "Request to delete User"
+											},
+											"response": []
+										},
+										{
+											"name": "Delete User",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "8d155bf4-6601-4e62-8134-d68da7f69041",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
+															"",
+															"// Tests contenu",
+															"var jsonData = pm.response.json();",
+															"tests[\"users is ok\"] = jsonData.users instanceof Array",
+															"tests[\"users get is ok\"] = jsonData.users.length === 1;",
+															"tests[\"user_id is ok\"] = parseInt(jsonData.users[0].user_id) === parseInt(pm.environment.get(\"main_user_id\"));"
+														]
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "0ecd1b2c-a4fd-4eea-914c-ca7139dc36de",
+														"type": "text/javascript",
+														"exec": [
+															"pm.environment.set(\"error_test\", false);"
+														]
+													}
+												}
+											],
+											"request": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/xml, application/json, application/x-vm-json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {},
+												"url": {
+													"raw": "https://{{host}}/rest/vitis/users/:user_id?token={{main_token}}",
+													"protocol": "https",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"rest",
+														"vitis",
+														"users",
+														":user_id"
+													],
+													"query": [
+														{
+															"key": "token",
+															"value": "{{main_token}}",
+															"equals": true
+														}
+													],
+													"variable": [
+														{
+															"key": "user_id",
+															"value": "{{main_user_id}}"
+														}
+													]
+												},
+												"description": "Request to delete User"
+											},
+											"response": []
+										}
+									],
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "End",
+									"description": "",
+									"item": [
+										{
+											"name": "Clear variables",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "389d9eba-f674-4158-a810-2fa8928a74fd",
+														"type": "text/javascript",
+														"exec": [
+															"// Test la présence de réponse",
+															"if(pm.response.responseSize === 0){",
+															"    tests['No response'] = false",
+															"    return null;",
+															"}",
 															"",
 															"// Nettoyage variables ",
 															"pm.environment.unset(\"main_user_attributes\");",
@@ -3392,11 +4240,13 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "9458991c-0866-42f0-bdd0-876a459d845e",
+												"id": "e8e65cf1-7126-45b8-8add-da68775ec376",
 												"type": "text/javascript",
 												"exec": [
 													"pm.environment.unset(\"main_token\");",
-													"pm.environment.unset(\"main_admin_id\");"
+													"pm.environment.unset(\"main_admin_id\");",
+													"pm.environment.unset(\"main_user_token\");",
+													"pm.environment.unset(\"main_user_id\");"
 												]
 											}
 										}
