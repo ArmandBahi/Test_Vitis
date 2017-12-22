@@ -2522,6 +2522,12 @@
 												}
 											],
 											"_postman_isSubFolder": true
+										},
+										{
+											"name": "Without rights",
+											"description": "",
+											"item": [],
+											"_postman_isSubFolder": true
 										}
 									],
 									"_postman_isSubFolder": true
